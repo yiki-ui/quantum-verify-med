@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Medicine, Batch, QuantumSignatureResponse, CardanoMintResponse, BatchRegistrationData } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-const QUANTUM_SERVICE_URL = import.meta.env.VITE_QUANTUM_SERVICE_URL || 'http://localhost:3005';
+
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -11,12 +11,7 @@ const api = axios.create({
     },
 });
 
-const quantumApi = axios.create({
-    baseURL: QUANTUM_SERVICE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+
 
 // Mock medicines data for demo
 const mockMedicines: Medicine[] = [
@@ -88,7 +83,7 @@ export const batchesApi = {
         return [];
     },
 
-    getById: async (id: string): Promise<Batch> => {
+    getById: async (_id: string): Promise<Batch> => {
         await new Promise(resolve => setTimeout(resolve, 300));
         throw new Error('Batch not found');
     },
@@ -130,7 +125,7 @@ export const quantumApi_service = {
         };
     },
 
-    signBatch: async (batchData: any, keyId: string): Promise<QuantumSignatureResponse> => {
+    signBatch: async (_batchData: any, keyId: string): Promise<QuantumSignatureResponse> => {
         // Simulate quantum signature generation
         await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -154,7 +149,7 @@ export const quantumApi_service = {
         };
     },
 
-    verifySignature: async (signature: string, data: any, publicKey: string) => {
+    verifySignature: async (_signature: string, _data: any, _publicKey: string) => {
         await new Promise(resolve => setTimeout(resolve, 800));
         return {
             success: true,
@@ -165,7 +160,7 @@ export const quantumApi_service = {
 
 // Cardano Blockchain API
 export const cardanoApi = {
-    mintNFT: async (batchData: any, signature: string): Promise<CardanoMintResponse> => {
+    mintNFT: async (batchData: any, _signature: string): Promise<CardanoMintResponse> => {
         // Simulated minting for demo purposes
         const txHash = Array.from({ length: 64 }, () =>
             Math.floor(Math.random() * 16).toString(16)
@@ -192,7 +187,7 @@ export const cardanoApi = {
         };
     },
 
-    verifyOnChain: async (txHash: string) => {
+    verifyOnChain: async (_txHash: string) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return {
             success: true,

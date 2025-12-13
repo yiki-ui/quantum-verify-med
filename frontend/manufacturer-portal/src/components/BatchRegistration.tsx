@@ -16,7 +16,7 @@ export default function BatchRegistration() {
     const [mintData, setMintData] = useState<any>(null);
 
     // Fetch medicines
-    const { data: medicines = [], isLoading } = useQuery({
+    const { data: medicines = [] } = useQuery({
         queryKey: ['medicines'],
         queryFn: medicinesApi.getAll,
     });
@@ -138,8 +138,8 @@ export default function BatchRegistration() {
 
                         {selectedMedicine && (
                             <div className={`glass-card p-4 ${selectedMedicine.is_authentic
-                                    ? 'bg-quantum-500/10 border-quantum-500/30'
-                                    : 'bg-danger-500/10 border-danger-500/30'
+                                ? 'bg-quantum-500/10 border-quantum-500/30'
+                                : 'bg-danger-500/10 border-danger-500/30'
                                 }`}>
                                 <p className="text-white/60 text-sm mb-1">Selected Medicine Details</p>
                                 <p className="text-white font-semibold">{selectedMedicine.description}</p>
