@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaVerify - Quantum-Secured Pharmaceutical Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        quantum: {
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-slow {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white">
+    <!-- Header -->
+    <header class="border-b border-white/10 backdrop-blur-lg bg-black/20">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">PharmaVerify</h1>
+                        <p class="text-xs text-white/60">Quantum-Secured Pharmaceutical Authentication</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 text-sm">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-white/60">Cardano Testnet</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-sm">
+                        <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                        <span class="text-white/60">Quantum Service Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- System Architecture Overview -->
+        <div class="glass-card p-8 mb-8">
+            <h2
+                class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                System Architecture
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 bg-purple-500/10 border-purple-500/30">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Quantum Service</h3>
+                    <p class="text-white/60 text-sm mb-3">CRYSTALS-Dilithium2 (NIST-approved)</p>
+                    <ul class="text-white/80 text-sm space-y-1">
+                        <li>• Generate quantum-resistant keypairs</li>
+                        <li>• Sign batch attestations</li>
+                        <li>• Verify digital signatures</li>
+                        <li>• Detect counterfeit products</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-6 bg-cyan-500/10 border-cyan-500/30">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Manufacturer Portal</h3>
+                    <p class="text-white/60 text-sm mb-3">Batch Registration & Attestation</p>
+                    <ul class="text-white/80 text-sm space-y-1">
+                        <li>• Register new medicine batches</li>
+                        <li>• Generate quantum signatures</li>
+                        <li>• Mint NFTs on Cardano</li>
+                        <li>• Track blockchain status</li>
+                    </ul>
+                </div>
+                <div class="glass-card p-6 bg-green-500/10 border-green-500/30">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Consumer Portal</h3>
+                    <p class="text-white/60 text-sm mb-3">Product Verification</p>
+                    <ul class="text-white/80 text-sm space-y-1">
+                        <li>• Scan batch numbers/QR codes</li>
+                        <li>• Verify on blockchain</li>
+                        <li>• Check quantum signatures</li>
+                        <li>• Detect counterfeits instantly</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Tabs -->
+        <div class="glass-card p-2 mb-6">
+            <div class="flex space-x-2">
+                <button onclick="showTab('manufacturer')" id="tab-manufacturer"
+                    class="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
+                    Manufacturer Portal
+                </button>
+                <button onclick="showTab('consumer')" id="tab-consumer"
+                    class="flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 text-white/60 hover:bg-white/10">
+                    Consumer Portal
+                </button>
+            </div>
+        </div>
+
+        <!-- Manufacturer Portal Demo -->
+        <div id="manufacturer-demo" class="space-y-6">
+            <div class="glass-card p-8">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <svg class="w-7 h-7 mr-3 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Register New Batch
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-white/80 font-semibold mb-2">Select Medicine</label>
+                        <select id="medicine-select"
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 outline-none">
+                            <option value="">Choose a medicine...</option>
+                            <option value="aspirin">Aspirin 500mg - Acetylsalicylic Acid ✓ Authentic</option>
+                            <option value="paracetamol">Paracetamol 1000mg - Paracetamol ✓ Authentic</option>
+                            <option value="fake">Aspirin 500mg - Unknown Ingredient ⚠️ COUNTERFEIT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-white/80 font-semibold mb-2">Quantity (units)</label>
+                        <input type="number" value="10000"
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-white/80 font-semibold mb-2">Manufacturing Date</label>
+                        <input type="date" value="2024-12-01"
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-white/80 font-semibold mb-2">Expiry Date</label>
+                        <input type="date" value="2026-12-01"
+                            class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 outline-none">
+                    </div>
+                </div>
+
+                <button onclick="registerBatch()"
+                    class="w-full px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>Generate Quantum Signature & Register Batch</span>
+                </button>
+            </div>
+
+            <!-- Registration Flow -->
+            <div id="registration-flow" class="hidden space-y-6">
+                <!-- Step 1: Quantum Signature -->
+                <div class="glass-card p-8 bg-purple-500/10 border-purple-500/30 slide-in">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-3 text-sm">1
+                        </div>
+                        Quantum Signature Generated
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Algorithm</p>
+                            <p class="text-white font-mono">CRYSTALS-Dilithium2 (NIST-approved)</p>
+                        </div>
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Signature (preview)</p>
+                            <p class="text-cyan-300 font-mono text-xs break-all" id="signature-preview">
+                                a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0...</p>
+                        </div>
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Batch Number</p>
+                            <p class="text-white font-mono" id="batch-number">BT-2024-1733493674</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-green-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span class="font-semibold">Quantum-resistant signature verified</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Blockchain Minting -->
+                <div class="glass-card p-8 bg-cyan-500/10 border-cyan-500/30 slide-in">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <div class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center mr-3 text-sm">2
+                        </div>
+                        Minting NFT on Cardano Blockchain
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Transaction Hash</p>
+                            <p class="text-cyan-300 font-mono text-xs break-all" id="tx-hash">
+                                3f7a9b2c8d1e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0
+                            </p>
+                        </div>
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Policy ID</p>
+                            <p class="text-cyan-300 font-mono text-xs break-all" id="policy-id">
+                                a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8</p>
+                        </div>
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Network</p>
+                            <p class="text-white font-semibold">Cardano Testnet</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-green-400">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="font-semibold">NFT successfully minted • 12 confirmations</span>
+                        </div>
+                        <a href="#" class="inline-flex items-center space-x-2 text-cyan-400 hover:text-cyan-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            <span>View on Cardano Explorer</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Step 3: QR Code Generation -->
+                <div class="glass-card p-8 bg-green-500/10 border-green-500/30 slide-in">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3 text-sm">3
+                        </div>
+                        QR Code Generated for Product Packaging
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="glass-card p-6 bg-white/5 text-center">
+                                <p class="text-white/60 text-sm mb-4">Scan this QR code to verify the product</p>
+                                <div id="qrcode" class="inline-block p-4 bg-white rounded-lg"></div>
+                                <p class="text-white/60 text-xs mt-4">Print this QR code on product packaging</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="glass-card p-4 bg-black/30">
+                                <p class="text-white/60 text-sm mb-2">QR Code Contains</p>
+                                <ul class="text-white text-sm space-y-2">
+                                    <li>• Batch Number</li>
+                                    <li>• Quantum Signature Hash</li>
+                                    <li>• Blockchain Transaction ID</li>
+                                    <li>• Verification URL</li>
+                                </ul>
+                            </div>
+                            <div class="glass-card p-4 bg-black/30">
+                                <p class="text-white/60 text-sm mb-2">Consumer Instructions</p>
+                                <p class="text-white text-sm">
+                                    Consumers can scan this QR code with any smartphone camera or the PharmaVerify app
+                                    to instantly verify product authenticity.
+                                </p>
+                            </div>
+                            <button onclick="downloadQR()"
+                                class="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg font-semibold text-white hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                <span>Download QR Code</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consumer Portal Demo -->
+        <div id="consumer-demo" class="hidden space-y-6">
+            <div class="glass-card p-8">
+                <div class="text-center mb-8">
+                    <div
+                        class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Verify Product Authenticity</h2>
+                    <p class="text-white/60">Enter batch number or scan QR code to verify your medicine</p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-white/80 font-semibold mb-2">Batch Number</label>
+                    <input type="text" id="verify-batch" placeholder="e.g., BT-2024-ASPIRIN-001"
+                        class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white text-lg focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 outline-none">
+                    <p class="text-white/40 text-sm mt-2">Find the batch number on your medicine packaging</p>
+                </div>
+
+                <!-- QR Code Scanner -->
+                <div class="glass-card p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-white font-semibold flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-cyan-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                            Or Scan QR Code
+                        </h3>
+                        <button id="toggle-scanner" onclick="toggleScanner()"
+                            class="px-4 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 rounded-lg font-semibold transition-all duration-300 flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span id="scanner-button-text">Start Camera</span>
+                        </button>
+                    </div>
+                    <div id="qr-reader" class="hidden">
+                        <div id="qr-reader-container" class="rounded-lg overflow-hidden bg-black"></div>
+                        <p class="text-white/60 text-sm mt-3 text-center">Position the QR code within the frame</p>
+                    </div>
+                    <div id="scanner-placeholder" class="text-center py-8">
+                        <svg class="w-20 h-20 text-white/20 mx-auto mb-3" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        <p class="text-white/60 text-sm">Click "Start Camera" to scan QR codes</p>
+                        <p class="text-white/40 text-xs mt-2">Works with product packaging QR codes</p>
+                    </div>
+                </div>
+
+                <button onclick="verifyProduct()"
+                    class="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg font-semibold text-white hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 flex items-center justify-center space-x-2 mb-6">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Verify Product</span>
+                </button>
+
+                <!-- Quick Test Buttons -->
+                <div class="glass-card p-6">
+                    <h3 class="text-white font-semibold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Quick Test - Try These Sample Batches
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <button onclick="verifyBatch('BT-2024-ASPIRIN-001', true)"
+                            class="glass-card p-4 hover:bg-white/10 transition-all duration-300 text-left border border-green-500/30 hover:border-green-500/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold px-2 py-1 rounded bg-green-500/20 text-green-400">✓
+                                    Authentic</span>
+                            </div>
+                            <p class="text-white font-semibold text-sm mb-1">Authentic Aspirin</p>
+                            <code class="text-white/60 text-xs font-mono">BT-2024-ASPIRIN-001</code>
+                        </button>
+                        <button onclick="verifyBatch('BT-2024-PARACETAMOL-001', true)"
+                            class="glass-card p-4 hover:bg-white/10 transition-all duration-300 text-left border border-green-500/30 hover:border-green-500/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold px-2 py-1 rounded bg-green-500/20 text-green-400">✓
+                                    Authentic</span>
+                            </div>
+                            <p class="text-white font-semibold text-sm mb-1">Authentic Paracetamol</p>
+                            <code class="text-white/60 text-xs font-mono">BT-2024-PARACETAMOL-001</code>
+                        </button>
+                        <button onclick="verifyBatch('BT-2024-ASPIRIN-FAKE-001', false)"
+                            class="glass-card p-4 hover:bg-white/10 transition-all duration-300 text-left border border-red-500/30 hover:border-red-500/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold px-2 py-1 rounded bg-red-500/20 text-red-400">⚠
+                                    Counterfeit</span>
+                            </div>
+                            <p class="text-white font-semibold text-sm mb-1">Counterfeit Aspirin</p>
+                            <code class="text-white/60 text-xs font-mono">BT-2024-ASPIRIN-FAKE-001</code>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Static QR Codes for Testing -->
+                <div class="glass-card p-6">
+                    <h3 class="text-white font-semibold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        Test QR Codes - Scan with Camera Above
+                    </h3>
+                    <p class="text-white/60 text-sm mb-4">Use these QR codes to test the scanner. Click "Start Camera"
+                        above and point at any QR code below.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Authentic Aspirin QR -->
+                        <div class="glass-card p-4 bg-green-500/10 border-green-500/30 text-center">
+                            <div class="inline-block p-3 bg-white rounded-lg mb-3">
+                                <div id="qr-aspirin"></div>
+                            </div>
+                            <p class="text-white font-semibold text-sm mb-1">Authentic Aspirin</p>
+                            <code class="text-white/60 text-xs font-mono">BT-2024-ASPIRIN-001</code>
+                            <div class="mt-2">
+                                <span class="text-xs font-semibold px-2 py-1 rounded bg-green-500/20 text-green-400">✓
+                                    Authentic</span>
+                            </div>
+                        </div>
+
+                        <!-- Authentic Paracetamol QR -->
+                        <div class="glass-card p-4 bg-green-500/10 border-green-500/30 text-center">
+                            <div class="inline-block p-3 bg-white rounded-lg mb-3">
+                                <div id="qr-paracetamol"></div>
+                            </div>
+                            <p class="text-white font-semibold text-sm mb-1">Authentic Paracetamol</p>
+                            <code class="text-white/60 text-xs font-mono">BT-2024-PARACETAMOL-001</code>
+                            <div class="mt-2">
+                                <span class="text-xs font-semibold px-2 py-1 rounded bg-green-500/20 text-green-400">✓
+                                    Authentic</span>
+                            </div>
+                        </div>
+
+                        <!-- Counterfeit Aspirin QR -->
+                        <div class="glass-card p-4 bg-red-500/10 border-red-500/30 text-center">
+                            <div class="inline-block p-3 bg-white rounded-lg mb-3">
+                                <div id="qr-fake"></div>
+                            </div>
+                            <p class="text-white font-semibold text-sm mb-1">Counterfeit Aspirin</p>
+                            <code class="text-white/60 text-xs font-mono">BT-2024-ASPIRIN-FAKE-001</code>
+                            <div class="mt-2">
+                                <span class="text-xs font-semibold px-2 py-1 rounded bg-red-500/20 text-red-400">⚠
+                                    Counterfeit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 glass-card p-4 bg-blue-500/10 border-blue-500/30">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-white font-semibold text-sm mb-1">How to Test</p>
+                                <ol class="text-white/60 text-sm space-y-1">
+                                    <li>1. Click "Start Camera" button above</li>
+                                    <li>2. Allow camera access when prompted</li>
+                                    <li>3. Point your camera at any QR code below</li>
+                                    <li>4. Scanner will automatically detect and verify</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Result -->
+            <div id="verification-result" class="hidden"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 backdrop-blur-lg bg-black/20 mt-20">
+        <div class="container mx-auto px-6 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+                <div>
+                    <h3 class="text-white font-semibold mb-3">Technology Stack</h3>
+                    <ul class="text-white/60 space-y-2">
+                        <li>• Cardano Blockchain (Testnet)</li>
+                        <li>• CRYSTALS-Dilithium2 (Post-Quantum)</li>
+                        <li>• CIP-25 NFT Standard</li>
+                        <li>• Aiken Smart Contracts</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-3">Security Features</h3>
+                    <ul class="text-white/60 space-y-2">
+                        <li>• Quantum-resistant cryptography</li>
+                        <li>• Immutable blockchain records</li>
+                        <li>• Real-time verification</li>
+                        <li>• Counterfeit detection</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-semibold mb-3">Demo Information</h3>
+                    <p class="text-white/60">
+                        This is a demonstration of the PharmaVerify system showcasing pharmaceutical authentication
+                        using post-quantum cryptography and Cardano blockchain.
+                    </p>
+                </div>
+            </div>
+            <div class="border-t border-white/10 mt-8 pt-6 text-center text-white/40 text-xs">
+                © 2024 PharmaVerify. Powered by Cardano Blockchain & Post-Quantum Cryptography.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(tab) {
+            const manufacturerDemo = document.getElementById('manufacturer-demo');
+            const consumerDemo = document.getElementById('consumer-demo');
+            const manufacturerTab = document.getElementById('tab-manufacturer');
+            const consumerTab = document.getElementById('tab-consumer');
+
+            if (tab === 'manufacturer') {
+                manufacturerDemo.classList.remove('hidden');
+                consumerDemo.classList.add('hidden');
+                manufacturerTab.classList.add('bg-gradient-to-r', 'from-cyan-500', 'to-blue-500', 'text-white');
+                manufacturerTab.classList.remove('text-white/60', 'hover:bg-white/10');
+                consumerTab.classList.remove('bg-gradient-to-r', 'from-cyan-500', 'to-blue-500', 'text-white');
+                consumerTab.classList.add('text-white/60', 'hover:bg-white/10');
+            } else {
+                manufacturerDemo.classList.add('hidden');
+                consumerDemo.classList.remove('hidden');
+                consumerTab.classList.add('bg-gradient-to-r', 'from-cyan-500', 'to-blue-500', 'text-white');
+                consumerTab.classList.remove('text-white/60', 'hover:bg-white/10');
+                manufacturerTab.classList.remove('bg-gradient-to-r', 'from-cyan-500', 'to-blue-500', 'text-white');
+                manufacturerTab.classList.add('text-white/60', 'hover:bg-white/10');
+            }
+        }
+
+        function registerBatch() {
+            const select = document.getElementById('medicine-select');
+            if (!select.value) {
+                alert('Please select a medicine first');
+                return;
+            }
+
+            // Generate random signature and hashes
+            const signature = Array.from({ length: 128 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            const txHash = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            const policyId = Array.from({ length: 56 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            const batchNumber = `BT-2024-${Date.now()}`;
+
+            document.getElementById('signature-preview').textContent = signature.substring(0, 64) + '...';
+            document.getElementById('batch-number').textContent = batchNumber;
+            document.getElementById('tx-hash').textContent = txHash;
+            document.getElementById('policy-id').textContent = policyId;
+
+            // Generate QR Code
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = ''; // Clear previous QR code
+            new QRCode(qrcodeDiv, {
+                text: batchNumber,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('registration-flow').classList.remove('hidden');
+            document.getElementById('registration-flow').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function downloadQR() {
+            const qrcodeCanvas = document.querySelector('#qrcode canvas');
+            if (qrcodeCanvas) {
+                const link = document.createElement('a');
+                link.download = 'pharmaverify-qrcode.png';
+                link.href = qrcodeCanvas.toDataURL();
+                link.click();
+            } else {
+                alert('Please generate a batch first');
+            }
+        }
+
+        let html5QrCode = null;
+        let isScannerActive = false;
+
+        function toggleScanner() {
+            const qrReader = document.getElementById('qr-reader');
+            const placeholder = document.getElementById('scanner-placeholder');
+            const buttonText = document.getElementById('scanner-button-text');
+
+            if (!isScannerActive) {
+                // Start scanner
+                placeholder.classList.add('hidden');
+                qrReader.classList.remove('hidden');
+                buttonText.textContent = 'Stop Camera';
+
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("qr-reader-container");
+                }
+
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText) => {
+                        // QR code successfully scanned
+                        console.log(`QR Code detected: ${decodedText}`);
+
+                        // Stop scanner
+                        stopScanner();
+
+                        // Auto-fill and verify
+                        document.getElementById('verify-batch').value = decodedText;
+
+                        // Show success message
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse';
+                        notification.innerHTML = `
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>QR Code Scanned!</span>
+                            </div>
+                        `;
+                        document.body.appendChild(notification);
+                        setTimeout(() => notification.remove(), 3000);
+
+                        // Auto-verify after 1 second
+                        setTimeout(() => {
+                            const isAuthentic = !decodedText.includes('FAKE');
+                            verifyBatch(decodedText, isAuthentic);
+                        }, 1000);
+                    },
+                    (errorMessage) => {
+                        // QR code parse error, ignore
+                    }
+                ).catch((err) => {
+                    console.error("Unable to start scanner:", err);
+                    alert("Unable to access camera. Please check permissions or use manual entry.");
+                    stopScanner();
+                });
+
+                isScannerActive = true;
+            } else {
+                stopScanner();
+            }
+        }
+
+        function stopScanner() {
+            if (html5QrCode && isScannerActive) {
+                html5QrCode.stop().then(() => {
+                    const qrReader = document.getElementById('qr-reader');
+                    const placeholder = document.getElementById('scanner-placeholder');
+                    const buttonText = document.getElementById('scanner-button-text');
+
+                    qrReader.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    buttonText.textContent = 'Start Camera';
+                    isScannerActive = false;
+                }).catch((err) => {
+                    console.error("Error stopping scanner:", err);
+                });
+            }
+        }
+
+        function verifyProduct() {
+            const batchInput = document.getElementById('verify-batch');
+            const batch = batchInput.value.trim();
+
+            if (!batch) {
+                alert('Please enter a batch number');
+                return;
+            }
+
+            const isAuthentic = !batch.includes('FAKE');
+            verifyBatch(batch, isAuthentic);
+        }
+
+        function verifyBatch(batchNumber, isAuthentic) {
+            const resultDiv = document.getElementById('verification-result');
+
+            const medicines = {
+                'BT-2024-ASPIRIN-001': { name: 'Aspirin 500mg', ingredient: 'Acetylsalicylic Acid', dosage: '500mg' },
+                'BT-2024-PARACETAMOL-001': { name: 'Paracetamol 1000mg', ingredient: 'Paracetamol', dosage: '1000mg' },
+                'BT-2024-ASPIRIN-FAKE-001': { name: 'Aspirin 500mg', ingredient: 'Unknown/Fake Ingredient', dosage: '500mg' }
+            };
+
+            const medicine = medicines[batchNumber] || { name: 'Unknown Product', ingredient: 'Unknown', dosage: 'Unknown' };
+            const txHash = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            const policyId = Array.from({ length: 56 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+
+            resultDiv.innerHTML = `
+                <div class="glass-card p-8 ${isAuthentic ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/50' : 'bg-gradient-to-r from-red-500/20 to-red-500/20 border-red-500/50'} slide-in">
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 ${isAuthentic ? 'bg-gradient-to-br from-green-500 to-emerald-500 animate-pulse-slow' : 'bg-gradient-to-br from-red-500 to-red-500 animate-pulse'}">
+                            ${isAuthentic ?
+                    '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>' :
+                    '<svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>'
+                }
+                        </div>
+                        <h2 class="text-4xl font-bold mb-2 ${isAuthentic ? 'text-green-400' : 'text-red-400'}">
+                            ${isAuthentic ? 'AUTHENTIC PRODUCT' : 'COUNTERFEIT DETECTED'}
+                        </h2>
+                        <p class="text-lg mb-4 ${isAuthentic ? 'text-green-300' : 'text-red-300'}">
+                            ${isAuthentic ?
+                    'This product has been verified as authentic on the Cardano blockchain with quantum-resistant cryptography.' :
+                    '⚠️ WARNING: This product appears to be counterfeit. Do not use. Report to authorities immediately.'
+                }
+                        </p>
+                        <div class="inline-block px-6 py-3 bg-black/30 rounded-lg">
+                            <p class="text-white/60 text-sm mb-1">Batch Number</p>
+                            <p class="text-white font-mono text-xl font-bold">${batchNumber}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h3 class="text-white font-semibold text-lg mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        Product Information
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="glass-card p-4 bg-white/5">
+                            <p class="text-white/60 text-sm mb-1">Medicine Name</p>
+                            <p class="text-white font-semibold">${medicine.name}</p>
+                        </div>
+                        <div class="glass-card p-4 bg-white/5">
+                            <p class="text-white/60 text-sm mb-1">Dosage</p>
+                            <p class="text-white font-semibold">${medicine.dosage}</p>
+                        </div>
+                        <div class="glass-card p-4 bg-white/5">
+                            <p class="text-white/60 text-sm mb-1">Manufacturer</p>
+                            <p class="text-white font-semibold">${isAuthentic ? 'PharmaCorp International' : 'Unknown/Counterfeit'}</p>
+                        </div>
+                        <div class="glass-card p-4 bg-white/5">
+                            <p class="text-white/60 text-sm mb-1">Active Ingredient</p>
+                            <p class="text-white font-semibold">${medicine.ingredient}</p>
+                        </div>
+                    </div>
+                </div>
+
+                ${isAuthentic ? `
+                <div class="glass-card p-6 bg-cyan-500/10 border-cyan-500/30">
+                    <h3 class="text-white font-semibold text-lg mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Blockchain Verification
+                    </h3>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        <p class="text-green-400 font-semibold">Verified on Cardano Blockchain</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Transaction Hash</p>
+                            <code class="text-cyan-300 text-sm font-mono break-all">${txHash}</code>
+                        </div>
+                        <div class="glass-card p-4 bg-black/30">
+                            <p class="text-white/60 text-sm mb-2">Policy ID</p>
+                            <code class="text-cyan-300 text-sm font-mono break-all">${policyId}</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 bg-purple-500/10 border-purple-500/30">
+                    <h3 class="text-white font-semibold text-lg mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        Post-Quantum Cryptography
+                    </h3>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-white/60 text-sm mb-1">Signature Algorithm</p>
+                            <p class="text-white font-semibold">CRYSTALS-Dilithium2</p>
+                        </div>
+                        <div class="px-4 py-2 rounded-lg font-semibold bg-green-500/20 text-green-400">
+                            ✓ Valid Signature
+                        </div>
+                    </div>
+                    <p class="text-white/60 text-sm mt-4">
+                        This product is protected with quantum-resistant cryptography, ensuring security against future quantum computer attacks.
+                    </p>
+                </div>
+                ` : `
+                <div class="glass-card p-6 bg-red-500/10 border-red-500/30">
+                    <div class="text-center py-4">
+                        <svg class="w-16 h-16 text-red-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <p class="text-red-400 font-semibold text-lg">Not Verified on Blockchain</p>
+                        <p class="text-white/60 text-sm mt-2">This product has no valid blockchain record</p>
+                        <p class="text-red-300 text-sm mt-4 font-semibold">⚠️ Invalid quantum signature detected</p>
+                    </div>
+                </div>
+                `}
+
+                <button onclick="resetVerification()" class="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg font-semibold text-white hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Verify Another Product</span>
+                </button>
+            `;
+
+            resultDiv.classList.remove('hidden');
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetVerification() {
+            document.getElementById('verification-result').classList.add('hidden');
+            document.getElementById('verify-batch').value = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Generate static QR codes on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            // Generate QR codes for sample batches
+            new QRCode(document.getElementById("qr-aspirin"), {
+                text: "BT-2024-ASPIRIN-001",
+                width: 150,
+                height: 150,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            new QRCode(document.getElementById("qr-paracetamol"), {
+                text: "BT-2024-PARACETAMOL-001",
+                width: 150,
+                height: 150,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            new QRCode(document.getElementById("qr-fake"), {
+                text: "BT-2024-ASPIRIN-FAKE-001",
+                width: 150,
+                height: 150,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        });
+    </script>
+</body>
+
+</html>

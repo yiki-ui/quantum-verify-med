@@ -1,0 +1,20 @@
+{
+    "name": "@pharma-verify/crypto",
+    "version": "1.0.0",
+    "description": "Post-quantum cryptography library for Pharma Verify",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "vitest"
+    },
+    "dependencies": {
+        "@noble/post-quantum": "^0.2.1"
+    },
+    "devDependencies": {
+        "@types/node": "^25.0.1",
+        "typescript": "^5.3.3",
+        "vitest": "^1.0.4"
+    }
+}

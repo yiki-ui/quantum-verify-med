@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables  
+.env
+.env.local
+.env.*.local
+
+# Logs and outputs
+logs/
+*.log
+*.tsbuildinfo
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.idea/
+.vscode/
+
+# Docker (no longer used)
+.dockerignore
+
+# Secrets
+*.pem
+*.keystore
+secrets/
+
+# Testing
+coverage/
+.nyc_output/
+.pytest_cache/
+.Python
+
+# Mobile (if removed)
+mobile/.expo/
+mobile/.expo-shared/
+
+# AI Models (if removed)
+ai-subsystem/models/*.pth
+ai-subsystem/models/*.h5
+
+# Misc
+.cache/
+temp/
+tmp/
+*~
+
+# Build outputs
+dist/
+build/
+*.js.map
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Removed directories (for reference)
+# backend/
+# infrastructure/
+# ai-subsystem/
+# admin-portal/
+# web-dashboard/
+# mobile/
+# pharma-verify/
+# hackathon-submissions/
