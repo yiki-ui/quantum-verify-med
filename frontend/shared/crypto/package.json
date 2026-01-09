@@ -10,7 +10,8 @@
         "test": "vitest"
     },
     "dependencies": {
-        "@noble/post-quantum": "^0.2.1"
+        "@noble/post-quantum": "^0.2.1",
+        "buffer": "^6.0.3"
     },
     "devDependencies": {
         "@types/node": "^25.0.1",
