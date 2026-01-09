@@ -26,14 +26,7 @@ export default defineConfig({
             }
         }
     },
-    resolve: {
-        alias: {
-            // Fix build error from shared library
-            'buffer': 'vite-plugin-node-polyfills/shims/buffer',
-            'process': 'vite-plugin-node-polyfills/shims/process',
-            'util': 'util',
-        },
-    },
+
     optimizeDeps: {
         esbuildOptions: {
             define: {
