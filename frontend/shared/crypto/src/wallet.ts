@@ -1,6 +1,7 @@
 /**
  * Cardano Wallet Integration for PQC Authentication
  */
+import { Buffer } from 'buffer';
 
 export interface WalletInfo {
     name: string;
