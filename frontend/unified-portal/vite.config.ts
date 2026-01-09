@@ -45,8 +45,4 @@ export default defineConfig({
         },
         include: ['buffer', 'process', 'util', 'stream-browserify'],
     },
-    define: {
-        'process.env': {},
-        global: 'globalThis',
-    },
 })
