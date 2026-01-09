@@ -2,15 +2,11 @@
 set -e
 
 # Navigate to the crypto shared library
-echo "Building @pharma-verify/crypto..."
+echo "Installing @pharma-verify/crypto dependencies..."
 cd ../shared/crypto
 
-# Install dependencies for crypto
+# Install dependencies for crypto (dist is already committed to git)
 npm install
-
-# Clean any cached dist and rebuild the crypto library
-rm -rf dist
-npm run build
 
 # Return to the unified-portal directory
 cd ../../unified-portal
