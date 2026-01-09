@@ -1,5 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Web3Auth } from "@web3auth/modal";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { useEffect, useState } from 'react';
 import ManufacturerEntry from './features/manufacturer/ManufacturerEntry';
 import ConsumerEntry from './features/consumer/ConsumerEntry';
 import './index.css';
@@ -10,6 +14,44 @@ import { walletManager } from '../../shared/crypto/dist/wallet';
 // Inline minimal Login component to test
 function UnifiedLogin() {
     const navigate = useNavigate();
+    const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
+
+    useEffect(() => {
+        const init = async () => {
+            try {
+                const clientId = import.meta.env.VITE_WEB3AUTH_CLIENT_ID;
+                if (!clientId) {
+                    console.warn("Web3Auth Client ID not found in environment variables");
+                    return;
+                }
+
+                const chainConfig = {
+                    chainNamespace: CHAIN_NAMESPACES.EIP155, // Use EIP155 for Ethereum/EVM compatibility
+                    chainId: "0x1",
+                    rpcTarget: "https://rpc.ankr.com/eth",
+                    displayName: "Ethereum Mainnet",
+                    blockExplorer: "https://etherscan.io",
+                    ticker: "ETH",
+                    tickerName: "Ethereum",
+                };
+
+                const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
+
+                const web3auth = new Web3Auth({
+                    clientId,
+                    web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+                    privateKeyProvider: privateKeyProvider as any,
+                });
+
+                await (web3auth as any).initModal();
+                setWeb3auth(web3auth);
+            } catch (error) {
+                console.error("Web3Auth initialization failed:", error);
+            }
+        };
+
+        init();
+    }, []);
 
     const handleDemoManufacturer = () => {
         const user = {
@@ -104,11 +146,38 @@ function UnifiedLogin() {
         }
     };
 
-    const handleGoogleLogin = () => {
-        // Since we don't have a real Web3Auth Client ID in this demo codebase, 
-        // we'll show a helpful message or simulate a login.
-        if (confirm("Web3Auth Client ID is missing for social login. Continue as Demo Consumer?")) {
-            handleDemoConsumer();
+    const handleGoogleLogin = async () => {
+        if (!web3auth) {
+            console.warn("Web3Auth not initialized yet");
+            if (confirm("Web3Auth is initializing or missing configuration. Continue properly?")) {
+                // Fallback or just wait
+            }
+            return;
+        }
+
+        try {
+            const provider = await web3auth.connect();
+            if (provider) {
+                const user = await web3auth.getUserInfo();
+                console.log("Logged in user:", user);
+
+                const anyUser = user as any;
+                // Create session
+                const sessionUser = {
+                    id: anyUser.verifierId || 'google-user-' + Date.now(),
+                    name: user.name || 'Google User',
+                    role: 'pharmacy', // Default role for social login
+                    email: user.email,
+                    profileImage: user.profileImage,
+                    verified: true
+                };
+
+                localStorage.setItem('user', JSON.stringify(sessionUser));
+                localStorage.setItem('token', 'web3auth-token-' + (anyUser.verifierId || ''));
+                navigate('/consumer');
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
         }
     };
 
