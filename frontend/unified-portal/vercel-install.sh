@@ -8,7 +8,8 @@ cd ../shared/crypto
 # Install dependencies for crypto
 npm install
 
-# Build the crypto library (generates dist/)
+# Clean any cached dist and rebuild the crypto library
+rm -rf dist
 npm run build
 
 # Return to the unified-portal directory
