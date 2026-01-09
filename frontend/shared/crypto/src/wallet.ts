@@ -27,72 +27,44 @@ export class CardanoWalletManager {
     /**
      * Get available Cardano wallets
      */
+    /**
+     * Get available Cardano wallets
+     */
     getAvailableWallets(): WalletInfo[] {
         const wallets: WalletInfo[] = [];
 
         console.log('Checking for wallets...');
-        console.log('window.cardano:', (window as any).cardano);
 
         // Check for common Cardano wallets
         if ((window as any).cardano) {
             const cardano = (window as any).cardano;
             console.log('Cardano object keys:', Object.keys(cardano));
 
-            // Nami
-            if (cardano.nami) {
-                console.log('Found Nami');
-                wallets.push({
-                    name: 'Nami',
-                    icon: '🦎',
-                    apiVersion: cardano.nami.apiVersion || '1.0.0',
-                    enable: () => cardano.nami.enable(),
-                });
-            } else {
-                console.log('Nami not found in cardano object');
-            }
+            // Dynamically discover wallets that adhere to CIP-30
+            for (const key of Object.keys(cardano)) {
+                const provider = cardano[key];
 
-            // Eternl
-            if (cardano.eternl) {
-                console.log('Found Eternl');
-                wallets.push({
-                    name: 'Eternl',
-                    icon: '♾️',
-                    apiVersion: cardano.eternl.apiVersion || '1.0.0',
-                    enable: () => cardano.eternl.enable(),
-                });
-            }
+                // Skip non-wallet objects (like other injected properties)
+                if (!provider || typeof provider !== 'object') continue;
 
-            // Flint
-            if (cardano.flint) {
-                console.log('Found Flint');
-                wallets.push({
-                    name: 'Flint',
-                    icon: '🔥',
-                    apiVersion: cardano.flint.apiVersion || '1.0.0',
-                    enable: () => cardano.flint.enable(),
-                });
-            }
+                // Check if it looks like a wallet provider (has enable and apiVersion or icon)
+                // Some wallets might not have apiVersion at top level, but enable is required by CIP-30
+                if (provider.enable && typeof provider.enable === 'function') {
+                    // Check if we already added this wallet (avoid duplicates if any)
+                    if (wallets.some(w => w.name === provider.name || w.name.toLowerCase() === key.toLowerCase())) continue;
 
-            // Typhon
-            if (cardano.typhon) {
-                console.log('Found Typhon');
-                wallets.push({
-                    name: 'Typhon',
-                    icon: '🌊',
-                    apiVersion: cardano.typhon.apiVersion || '1.0.0',
-                    enable: () => cardano.typhon.enable(),
-                });
-            }
+                    // Determine name (use key as fallback)
+                    const name = provider.name || key.charAt(0).toUpperCase() + key.slice(1);
 
-            // Lace
-            if (cardano.lace) {
-                console.log('Found Lace');
-                wallets.push({
-                    name: 'Lace',
-                    icon: '🧶',
-                    apiVersion: cardano.lace.apiVersion || '1.0.0',
-                    enable: () => cardano.lace.enable(),
-                });
+                    console.log(`Found wallet: ${name} (${key})`);
+
+                    wallets.push({
+                        name: name,
+                        icon: provider.icon || '🪙', // Default icon if missing
+                        apiVersion: provider.apiVersion || '0.0.0',
+                        enable: () => provider.enable(),
+                    });
+                }
             }
         } else {
             console.log('No window.cardano object found');
