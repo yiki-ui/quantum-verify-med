@@ -29,12 +29,9 @@ export default defineConfig({
     resolve: {
         alias: {
             // Fix build error from shared library
-            'vite-plugin-node-polyfills/shims/buffer': 'buffer',
-            // Force bundling by using absolute paths or explicit package resolution
-            buffer: 'buffer',
-            process: 'process/browser',
-            stream: 'stream-browserify',
-            util: 'util',
+            'buffer': 'vite-plugin-node-polyfills/shims/buffer',
+            'process': 'vite-plugin-node-polyfills/shims/process',
+            'util': 'util',
         },
     },
     optimizeDeps: {
