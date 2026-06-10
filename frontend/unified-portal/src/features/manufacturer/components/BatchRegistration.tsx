@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { medicinesApi, quantumApi_service, cardanoApi } from '../services/api';
 import QuantumSignatureDisplay from './QuantumSignatureDisplay';
 import CardanoMintingFlow from './CardanoMintingFlow';
+import ChatWidget from '../../../components/ChatWidget';
 
 export default function BatchRegistration() {
     const [step, setStep] = useState(1);
@@ -16,7 +17,7 @@ export default function BatchRegistration() {
     const [mintData, setMintData] = useState<any>(null);
 
     // Fetch medicines
-    const { data: medicines = [] } = useQuery({
+    const { data: medicines = [], isError: medicinesError } = useQuery({
         queryKey: ['medicines'],
         queryFn: medicinesApi.getAll,
     });
@@ -117,6 +118,18 @@ export default function BatchRegistration() {
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {medicinesError && (
+                            <div className="p-4 bg-danger-500/10 border border-danger-500/30 rounded-lg flex items-start space-x-3">
+                                <svg className="w-5 h-5 text-danger-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <h3 className="text-danger-400 font-semibold text-sm">Failed to load medicines</h3>
+                                    <p className="text-white/60 text-xs mt-1">Please check your connection and refresh the page.</p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Medicine Selection */}
                         <div>
                             <label className="block text-white/80 font-semibold mb-2">Select Medicine</label>
@@ -125,6 +138,7 @@ export default function BatchRegistration() {
                                 onChange={(e) => setFormData({ ...formData, medicine_id: e.target.value })}
                                 className="input-field w-full"
                                 required
+                                disabled={medicinesError}
                             >
                                 <option value="">Choose a medicine...</option>
                                 {medicines.map((medicine) => (
@@ -230,9 +244,19 @@ export default function BatchRegistration() {
             )}
 
             {/* Step 3: Cardano Minting */}
-            {step === 3 && mintData && (
-                <CardanoMintingFlow data={mintData} batchNumber={quantumData.batchNumber} />
+            {step === 3 && mintData && selectedMedicine && (
+                <CardanoMintingFlow data={mintData} batchNumber={quantumData.batchNumber} medicine={selectedMedicine} />
             )}
+
+            <ChatWidget
+                contextData={{
+                    userRole: 'manufacturer',
+                    medicineName: selectedMedicine ? selectedMedicine.name : undefined,
+                    activeIngredient: selectedMedicine ? selectedMedicine.active_ingredient : undefined,
+                    dosage: selectedMedicine ? selectedMedicine.dosage : undefined,
+                }}
+                title="Manufacturer AI Assistant"
+            />
         </div>
     );
 }

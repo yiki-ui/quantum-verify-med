@@ -114,27 +114,37 @@ export class AikenTokenStrategy {
             // Construct CIP-68 metadata
             const cip68Metadata = this.createCIP68Metadata(metadata);
 
-            // TODO: MeshSDK v1.8.14 mintAsset API needs verification
-            // For now, using mock implementation for pitch demo
-            // The actual minting will work once we verify the correct API signature
+            // Define forge script from the compiled Aiken validator
+            const forgeScript = {
+                code: this.policyScript,
+                version: 'V2',
+            };
 
-            // Mock transaction hash for demo
-            const txHash = `mock_tx_${Date.now()}_${batchId.substring(0, 8)}`;
+            // Mint CIP-68 User NFT (100) and Reference Token (222)
+            tx.mintAsset(forgeScript, { assetName: nftAssetName, assetQuantity: '1' });
+            tx.mintAsset(forgeScript, { assetName: refAssetName, assetQuantity: '1' });
 
-            console.log(`✅ [DEMO MODE] Batch token minted. Tx: ${txHash}`);
-            console.log(`   NFT Asset: ${nftAssetName}`);
-            console.log(`   Ref Asset: ${refAssetName}`);
-            console.log(`   Policy ID: ${this.policyId}`);
+            // Standard CIP-25 Metadata for the user NFT
+            tx.setMetadata(721, { 
+                [this.policyId]: { 
+                    [nftAssetName]: {
+                        ...metadata,
+                        name: `${metadata.name} (Verified Batch)`,
+                    } 
+                } 
+            });
 
-            // NOTE: Uncomment and fix when integrating real blockchain minting:
-            // tx.mintAsset(forgeScript, { assetName: nftAssetName, assetQuantity: '1' });
-            // tx.mintAsset(forgeScript, { assetName: refAssetName, assetQuantity: '1' });
-            // tx.setMetadata(721, { [this.policyId]: { [nftAssetName]: metadata } });
-            // tx.setMetadata(20, cip68Metadata);
-            // tx.setRequiredSigners([manufacturerKey]);
-            // const unsignedTx = await tx.build();
-            // const signedTx = await this.wallet.signTx(unsignedTx);
-            // const txHash = await this.wallet.submitTx(signedTx);
+            // CIP-68 Reference Metadata (Label 68)
+            tx.setMetadata(68, cip68Metadata);
+
+            // Ensure the transaction is signed by the authorized manufacturer
+            tx.setRequiredSigners([manufacturerKey]);
+
+            const unsignedTx = await tx.build();
+            const signedTx = await this.wallet.signTx(unsignedTx);
+            const txHash = await this.wallet.submitTx(signedTx);
+
+            console.log(`✅ Batch token successfully minted on Cardano. Tx: ${txHash}`);
 
             return {
                 txHash,

@@ -5,8 +5,9 @@ set -e
 echo "Installing @pharma-verify/crypto dependencies..."
 cd ../shared/crypto
 
-# Install dependencies for crypto (dist is already committed to git)
+# Install and build dependencies for crypto (dist is gitignored)
 npm install
+npm run build
 
 # Return to the unified-portal directory
 cd ../../unified-portal

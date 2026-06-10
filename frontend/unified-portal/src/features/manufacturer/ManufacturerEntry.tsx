@@ -1,33 +1,13 @@
-import { useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import BatchRegistration from './components/BatchRegistration';
 import BatchDashboard from './components/BatchDashboard';
-import { authUtils } from './services/auth';
+import { useAuth } from '../../lib/auth';
 
 function ManufacturerEntry() {
-    useEffect(() => {
-        // Check if user is authenticated
-        const user = authUtils.getStoredUser();
-        const token = authUtils.getToken();
-
-        if (!user || !token) {
-            // Not logged in, redirect to auth portal
-            // In unified app, we redirect to /login
-            window.location.href = '/login';
-            return;
-        }
-
-        // Check if user has manufacturer role
-        if (user.role !== 'manufacturer') {
-            // Wrong portal, redirect to auth
-            alert('Access denied. This portal is for manufacturers only.');
-            authUtils.logout();
-            window.location.href = '/login';
-        }
-    }, []);
+    const { logout } = useAuth();
 
     const handleLogout = () => {
-        authUtils.logout();
+        logout();
         window.location.href = '/login';
     };
 

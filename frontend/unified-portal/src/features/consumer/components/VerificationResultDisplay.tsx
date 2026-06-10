@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { VerificationResult } from '../types';
+import ChatWidget from '../../../components/ChatWidget';
+import { jsPDF } from 'jspdf';
 
 interface Props {
     result: VerificationResult;
@@ -8,22 +10,169 @@ interface Props {
 
 export default function VerificationResultDisplay({ result, onReset }: Props) {
     const [showAnimation, setShowAnimation] = useState(false);
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
     useEffect(() => {
         setShowAnimation(true);
-    }, []);
+    }, [result.isAuthentic]);
+
+    const handleDownloadPDF = () => {
+        setIsGeneratingPDF(true);
+        try {
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            const primary  = '#0ea5e9';
+            const success  = '#10b981';
+            const danger   = '#ef4444';
+            const textDark = '#1e293b';
+            const textGray = '#64748b';
+
+            // ── Header ──────────────────────────────────────────────────────
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(24);
+            pdf.setTextColor(primary);
+            pdf.text('PharmaVerify', 20, 25);
+
+            pdf.setFontSize(14);
+            pdf.setTextColor(textDark);
+            pdf.text('Medicine Verification Report', 20, 35);
+
+            pdf.setDrawColor(226, 232, 240);
+            pdf.setLineWidth(0.5);
+            pdf.line(20, 40, 190, 40);
+
+            // ── Verification Status ─────────────────────────────────────────
+            pdf.setFontSize(16);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(result.isAuthentic ? success : danger);
+            pdf.text(result.isAuthentic ? '✓ AUTHENTIC PRODUCT' : '✗ COUNTERFEIT DETECTED', 20, 55);
+
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(textGray);
+            pdf.text(result.message || '', 20, 63);
+
+            pdf.setFontSize(11);
+            pdf.setTextColor(textGray);
+            pdf.text('Batch Number:', 20, 75);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(textDark);
+            pdf.text(result.batchNumber, 60, 75);
+
+            // ── Product Information ─────────────────────────────────────────
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(primary);
+            pdf.text('Product Information', 20, 92);
+
+            const fields: [string, string][] = [
+                ['Medicine Name',    result.medicine?.name || 'N/A'],
+                ['Active Ingredient',result.medicine?.active_ingredient || 'N/A'],
+                ['Dosage',           result.medicine?.dosage || 'N/A'],
+                ['Manufacturer',     result.medicine?.manufacturer || 'N/A'],
+            ];
+            let y = 104;
+            fields.forEach(([label, value]) => {
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(textGray);
+                pdf.text(label + ':', 20, y);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(textDark);
+                pdf.text(value, 70, y);
+                y += 10;
+            });
+
+            // ── Batch Details ───────────────────────────────────────────────
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(primary);
+            pdf.text('Batch Details', 20, y + 8);
+            y += 20;
+
+            const batchFields: [string, string][] = [
+                ['Status',              (result.batch?.status || 'unknown').toUpperCase()],
+                ['Quantity',            (result.batch?.quantity?.toLocaleString() || 'N/A') + ' units'],
+                ['Manufacturing Date',  result.batch?.manufacturing_date ? new Date(result.batch.manufacturing_date).toLocaleDateString() : 'N/A'],
+                ['Expiry Date',         result.batch?.expiry_date ? new Date(result.batch.expiry_date).toLocaleDateString() : 'N/A'],
+            ];
+            batchFields.forEach(([label, value]) => {
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(textGray);
+                pdf.text(label + ':', 20, y);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(textDark);
+                pdf.text(value, 70, y);
+                y += 10;
+            });
+
+            // ── Blockchain ──────────────────────────────────────────────────
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(primary);
+            pdf.text('Blockchain Verification', 20, y + 8);
+            y += 20;
+
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(result.blockchain?.verified ? success : danger);
+            pdf.text(result.blockchain?.verified ? '✓ Verified on Cardano Blockchain' : '✗ Not verified on blockchain', 20, y);
+            y += 10;
+
+            if (result.blockchain?.txHash) {
+                pdf.setTextColor(textGray);
+                pdf.text('Tx Hash:', 20, y);
+                pdf.setTextColor(textDark);
+                pdf.setFontSize(8);
+                pdf.text(result.blockchain.txHash, 45, y);
+                y += 10;
+            }
+
+            // ── Quantum Signature ───────────────────────────────────────────
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(primary);
+            pdf.text('Post-Quantum Cryptography', 20, y + 8);
+            y += 20;
+
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(result.quantum?.signatureValid ? success : danger);
+            pdf.text(result.quantum?.signatureValid ? '✓ Quantum Signature Valid' : '✗ Signature Invalid', 20, y);
+            y += 8;
+            pdf.setTextColor(textGray);
+            pdf.text('Algorithm: ' + (result.quantum?.algorithm || 'N/A'), 20, y);
+
+            // ── Footer ──────────────────────────────────────────────────────
+            pdf.setDrawColor(226, 232, 240);
+            pdf.line(20, 275, 190, 275);
+            pdf.setFontSize(8);
+            pdf.setTextColor(textGray);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text('Generated by Quantum Verify Med — Blockchain-Authenticated Pharmaceutical Verification', 20, 282);
+            pdf.text('Timestamp: ' + new Date().toLocaleString(), 20, 288);
+
+            pdf.save(`PharmaVerify-Report-${result.batchNumber}.pdf`);
+        } catch (error) {
+            console.error('Failed to generate PDF:', error);
+        } finally {
+            setIsGeneratingPDF(false);
+        }
+    };
 
     return (
+        <>
         <div className={`transition-all duration-500 ${showAnimation ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
             {/* Result Header */}
             <div className={`glass-card p-8 mb-6 ${result.isAuthentic
-                    ? 'bg-gradient-to-r from-success-500/20 to-emerald-500/20 border-success-500/50'
-                    : 'bg-gradient-to-r from-danger-500/20 to-red-500/20 border-danger-500/50'
+                ? 'bg-gradient-to-r from-success-500/20 to-emerald-500/20 border-success-500/50'
+                : 'bg-gradient-to-r from-danger-500/20 to-red-500/20 border-danger-500/50'
                 }`}>
                 <div className="text-center">
                     <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full mb-4 ${result.isAuthentic
-                            ? 'bg-gradient-to-br from-success-500 to-emerald-500 animate-pulse-slow'
-                            : 'bg-gradient-to-br from-danger-500 to-red-500 animate-pulse'
+                        ? 'bg-gradient-to-br from-success-500 to-emerald-500 animate-pulse-slow'
+                        : 'bg-gradient-to-br from-danger-500 to-red-500 animate-pulse'
                         }`}>
                         {result.isAuthentic ? (
                             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,8 +265,8 @@ export default function VerificationResultDisplay({ result, onReset }: Props) {
 
             {/* Blockchain Verification */}
             <div className={`glass-card p-6 mb-6 ${result.blockchain.verified
-                    ? 'bg-cyan-500/10 border-cyan-500/30'
-                    : 'bg-red-500/10 border-red-500/30'
+                ? 'bg-cyan-500/10 border-cyan-500/30'
+                : 'bg-red-500/10 border-red-500/30'
                 }`}>
                 <h3 className="text-white font-semibold text-lg mb-4 flex items-center">
                     <svg className="w-6 h-6 mr-2 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,8 +327,8 @@ export default function VerificationResultDisplay({ result, onReset }: Props) {
 
             {/* Quantum Signature */}
             <div className={`glass-card p-6 mb-6 ${result.quantum.signatureValid
-                    ? 'bg-purple-500/10 border-purple-500/30'
-                    : 'bg-red-500/10 border-red-500/30'
+                ? 'bg-purple-500/10 border-purple-500/30'
+                : 'bg-red-500/10 border-red-500/30'
                 }`}>
                 <h3 className="text-white font-semibold text-lg mb-4 flex items-center">
                     <svg className="w-6 h-6 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,8 +343,8 @@ export default function VerificationResultDisplay({ result, onReset }: Props) {
                         <p className="text-white font-semibold">{result.quantum.algorithm}</p>
                     </div>
                     <div className={`px-4 py-2 rounded-lg font-semibold ${result.quantum.signatureValid
-                            ? 'bg-success-500/20 text-success-400'
-                            : 'bg-danger-500/20 text-danger-400'
+                        ? 'bg-success-500/20 text-success-400'
+                        : 'bg-danger-500/20 text-danger-400'
                         }`}>
                         {result.quantum.signatureValid ? '✓ Valid Signature' : '✗ Invalid Signature'}
                     </div>
@@ -220,15 +369,38 @@ export default function VerificationResultDisplay({ result, onReset }: Props) {
                     <span>Verify Another Product</span>
                 </button>
                 <button
-                    onClick={() => window.print()}
-                    className="glass-card px-6 py-3 hover:bg-white/10 transition-all duration-300 flex items-center justify-center space-x-2 text-white font-semibold"
+                    onClick={handleDownloadPDF}
+                    disabled={isGeneratingPDF}
+                    className="glass-card px-6 py-3 hover:bg-white/10 transition-all duration-300 flex items-center justify-center space-x-2 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    <span>Print Report</span>
+                    {isGeneratingPDF ? (
+                        <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                    ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                    )}
+                    <span>{isGeneratingPDF ? 'Generating PDF...' : 'Download PDF Report'}</span>
                 </button>
             </div>
         </div>
+
+            {/* Interactive AI Chat Widget (Only for Authentic Products) */}
+            {result.isAuthentic && (
+                <ChatWidget
+                    contextData={{
+                        medicineName: result.medicine.name,
+                        activeIngredient: result.medicine.active_ingredient,
+                        dosage: result.medicine.dosage,
+                        batchNumber: result.batchNumber,
+                        status: result.batch.status,
+                    }}
+                    title="Smart Consumer Assistant"
+                />
+            )}
+        </>
     );
 }

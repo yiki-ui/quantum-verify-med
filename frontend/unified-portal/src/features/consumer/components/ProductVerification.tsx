@@ -15,9 +15,11 @@ export default function ProductVerification() {
     const [batchNumber, setBatchNumber] = useState('');
     const [result, setResult] = useState<VerificationResult | null>(null);
     const [isScannerActive, setIsScannerActive] = useState(false);
+    const [scannerError, setScannerError] = useState<string | null>(null);
 
     // Use a ref to track the scanner instance safely
     const scannerRef = useRef<Html5Qrcode | null>(null);
+    const isStartingRef = useRef(false);
 
     const verifyMutation = useMutation({
         mutationFn: async (batch: string) => {
@@ -28,10 +30,6 @@ export default function ProductVerification() {
             const verification = await cardanoService.verifyBatchPQC(batch);
 
             if (!verification.valid || !verification.pqcData) {
-                // If it fails, fallback to checking if it's the known "fake"
-                if (batch === 'BT-2024-ASPIRIN-FAKE-001') {
-                    throw new Error('This batch has been flagged as COUNTERFEIT.');
-                }
                 throw new Error('Batch not found on blockchain.');
             }
 
@@ -95,6 +93,7 @@ export default function ProductVerification() {
 
     const toggleScanner = () => {
         setResult(null); // Clear previous results when scanning
+        setScannerError(null); // Clear previous errors
         setIsScannerActive(prev => !prev);
     };
 
@@ -103,23 +102,22 @@ export default function ProductVerification() {
         let isMounted = true;
 
         const startScanner = async () => {
+            if (isStartingRef.current || scannerRef.current) return;
+            isStartingRef.current = true;
+            setScannerError(null);
+
             // Wait for DOM to update
             await new Promise(r => setTimeout(r, 100));
 
             if (!document.getElementById('qr-reader')) {
                 console.warn("QR Reader element not found");
-                return;
-            }
-
-            if (scannerRef.current) {
-                // Already running
+                isStartingRef.current = false;
                 return;
             }
 
             try {
                 const html5QrCode = new Html5Qrcode("qr-reader");
-                scannerRef.current = html5QrCode;
-
+                
                 await html5QrCode.start(
                     { facingMode: "environment" },
                     {
@@ -147,9 +145,20 @@ export default function ProductVerification() {
                         // Ignore scan errors, they happen every frame
                     }
                 );
-            } catch (err) {
+                
+                if (isMounted) {
+                    scannerRef.current = html5QrCode;
+                } else {
+                    html5QrCode.stop().catch(console.error);
+                }
+            } catch (err: any) {
                 console.error("Failed to start scanner", err);
-                setIsScannerActive(false);
+                if (isMounted) {
+                    setScannerError(err.message || "Failed to access camera. Please check permissions.");
+                    setIsScannerActive(false);
+                }
+            } finally {
+                isStartingRef.current = false;
             }
         };
 
@@ -265,14 +274,30 @@ export default function ProductVerification() {
                             {/* Always render the container, but hide it visually if not active, 
                                 or conditionally render. Conditional usually safer for permissions if handled correctly.
                                 Here we use conditional but rely on the useEffect delay to ensure DOM exists. */}
-                            {isScannerActive && (
+                            {isScannerActive && !scannerError && (
                                 <div>
                                     <div id="qr-reader" className="rounded-lg overflow-hidden w-full h-[300px] bg-black" />
                                     <p className="text-white/60 text-sm mt-3 text-center">Position the QR code within the frame</p>
                                 </div>
                             )}
 
-                            {!isScannerActive && (
+                            {scannerError && (
+                                <div className="p-4 bg-danger-500/10 border border-danger-500/30 rounded-lg text-center">
+                                    <svg className="w-8 h-8 text-danger-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <p className="text-danger-400 font-semibold mb-1">Camera Error</p>
+                                    <p className="text-white/60 text-sm">{scannerError}</p>
+                                    <button 
+                                        onClick={toggleScanner}
+                                        className="mt-3 text-sm text-cyan-400 hover:text-cyan-300 font-medium"
+                                    >
+                                        Try Again
+                                    </button>
+                                </div>
+                            )}
+
+                            {!isScannerActive && !scannerError && (
                                 <div className="text-center py-8">
                                     <svg className="w-20 h-20 text-white/20 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />

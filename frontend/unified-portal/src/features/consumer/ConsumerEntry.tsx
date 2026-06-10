@@ -1,30 +1,11 @@
-import { useEffect } from 'react';
 import ProductVerification from './components/ProductVerification';
-import { authUtils } from './services/auth';
+import { useAuth } from '../../lib/auth';
 
 export default function ConsumerEntry() {
-    useEffect(() => {
-        // Check if user is authenticated
-        const user = authUtils.getStoredUser();
-        const token = authUtils.getToken();
-
-        if (!user || !token) {
-            // Not logged in, redirect to auth portal
-            window.location.href = '/login';
-            return;
-        }
-
-        // Check if user has pharmacy role
-        if (user.role !== 'pharmacy') {
-            // Wrong portal, redirect to auth
-            alert('Access denied. This portal is for pharmacies/consumers only.');
-            authUtils.logout();
-            window.location.href = '/login';
-        }
-    }, []);
+    const { logout } = useAuth();
 
     const handleLogout = () => {
-        authUtils.logout();
+        logout();
         window.location.href = '/login';
     };
 

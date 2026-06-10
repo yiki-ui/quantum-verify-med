@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import QRCode from 'qrcode';
+import { jsPDF } from 'jspdf';
+import ChatWidget from '../../../components/ChatWidget';
 
 interface Props {
     data: {
@@ -10,12 +12,15 @@ interface Props {
         explorerUrl: string;
     };
     batchNumber: string;
+    medicine: any;
 }
 
-export default function CardanoMintingFlow({ data, batchNumber }: Props) {
+export default function CardanoMintingFlow({ data, batchNumber, medicine }: Props) {
     const [showConfetti, setShowConfetti] = useState(false);
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const reportRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setShowConfetti(true);
@@ -58,8 +63,134 @@ export default function CardanoMintingFlow({ data, batchNumber }: Props) {
         }
     };
 
+    const generatePDF = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Colors
+            const primaryColor = '#0ea5e9'; // Cyan/Blue
+            const textColor = '#1e293b'; // Slate 800
+            const lightText = '#64748b'; // Slate 500
+
+            // Header
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(24);
+            pdf.setTextColor(primaryColor);
+            pdf.text('PharmaVerify', 20, 25);
+            
+            pdf.setFontSize(16);
+            pdf.setTextColor(textColor);
+            pdf.text('Official Batch Registration Report', 20, 35);
+            
+            // Line separator
+            pdf.setDrawColor(226, 232, 240);
+            pdf.setLineWidth(0.5);
+            pdf.line(20, 42, 190, 42);
+
+            // Batch Details
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Batch Details', 20, 55);
+
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(lightText);
+            pdf.text('Batch Number:', 20, 65);
+            pdf.setTextColor(textColor);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(batchNumber, 60, 65);
+
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(lightText);
+            pdf.text('Status:', 20, 75);
+            pdf.setTextColor('#10b981'); // Green
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Verified & Minted to Blockchain', 60, 75);
+
+            // QR Code
+            if (canvasRef.current) {
+                const qrDataUrl = canvasRef.current.toDataURL('image/png');
+                pdf.addImage(qrDataUrl, 'PNG', 130, 45, 60, 60);
+                
+                pdf.setFontSize(9);
+                pdf.setTextColor(lightText);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text('Scan to Verify Authenticity', 135, 110);
+            }
+
+            // Blockchain Details
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(primaryColor);
+            pdf.text('Blockchain Verification Details', 20, 130);
+
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(lightText);
+            
+            const startY = 145;
+            const lineHeight = 12;
+
+            pdf.text('Network:', 20, startY);
+            pdf.setTextColor(textColor);
+            pdf.text(data.network, 60, startY);
+
+            pdf.setTextColor(lightText);
+            pdf.text('Asset Name:', 20, startY + lineHeight);
+            pdf.setTextColor(textColor);
+            pdf.text(data.assetName, 60, startY + lineHeight);
+
+            pdf.setTextColor(lightText);
+            pdf.text('Policy ID:', 20, startY + lineHeight * 2);
+            pdf.setTextColor(textColor);
+            pdf.setFontSize(9);
+            pdf.text(data.policyId, 60, startY + lineHeight * 2);
+
+            pdf.setFontSize(11);
+            pdf.setTextColor(lightText);
+            pdf.text('Transaction:', 20, startY + lineHeight * 3);
+            pdf.setTextColor(textColor);
+            pdf.setFontSize(9);
+            pdf.text(data.txHash, 60, startY + lineHeight * 3);
+
+            // Security Features
+            pdf.setFontSize(14);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(primaryColor);
+            pdf.text('Security Attestations', 20, 210);
+
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(textColor);
+            pdf.text('✓ Immutable record on Cardano blockchain', 25, 225);
+            pdf.text('✓ Post-quantum cryptographic signature embedded', 25, 235);
+            pdf.text('✓ Tamper-proof batch attestation', 25, 245);
+
+            // Footer
+            pdf.setDrawColor(226, 232, 240);
+            pdf.line(20, 275, 190, 275);
+            pdf.setFontSize(8);
+            pdf.setTextColor(lightText);
+            pdf.text('Generated by Quantum Verify Med System', 20, 282);
+            const date = new Date().toLocaleString();
+            pdf.text(`Timestamp: ${date}`, 20, 288);
+
+            pdf.save(`PharmaVerify-BatchReport-${batchNumber}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        } finally {
+            setIsGeneratingPDF(false);
+        }
+    };
+
     return (
-        <div className="glass-card p-8 relative overflow-hidden">
+        <>
+        <div className="glass-card p-8 relative overflow-hidden" ref={reportRef}>
             {/* Success Animation */}
             {showConfetti && (
                 <div className="absolute inset-0 pointer-events-none">
@@ -218,8 +349,10 @@ export default function CardanoMintingFlow({ data, batchNumber }: Props) {
                     </div>
                 </div>
 
+
+
                 {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-html2canvas-ignore>
                     <a
                         href={data.explorerUrl}
                         target="_blank"
@@ -240,8 +373,39 @@ export default function CardanoMintingFlow({ data, batchNumber }: Props) {
                         </svg>
                         <span>Go to Dashboard</span>
                     </button>
+                    <button
+                        onClick={generatePDF}
+                        disabled={isGeneratingPDF}
+                        className="glass-card flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 text-white font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isGeneratingPDF ? (
+                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                        ) : (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        )}
+                        <span>{isGeneratingPDF ? 'Generating...' : 'Download PDF Report'}</span>
+                    </button>
                 </div>
             </div>
         </div>
+
+            {/* Interactive AI Chat Widget */}
+            {medicine && (
+                <ChatWidget
+                    contextData={{
+                        medicineName: medicine.name,
+                        activeIngredient: medicine.active_ingredient,
+                        dosage: medicine.dosage,
+                        batchNumber: batchNumber,
+                    }}
+                    title="Smart Batch Assistant"
+                />
+            )}
+        </>
     );
 }

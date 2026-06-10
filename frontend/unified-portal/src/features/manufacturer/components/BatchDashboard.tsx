@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { batchesApi, medicinesApi } from '../services/api';
+import ChatWidget from '../../../components/ChatWidget';
 
 export default function BatchDashboard() {
     const { data: batches = [], isLoading: batchesLoading } = useQuery({
@@ -167,6 +168,11 @@ export default function BatchDashboard() {
                     ))
                 )}
             </div>
+
+            <ChatWidget
+                contextData={{ userRole: 'manufacturer' }}
+                title="Manufacturer AI Assistant"
+            />
         </div>
     );
 }

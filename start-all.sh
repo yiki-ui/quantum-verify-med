@@ -30,27 +30,6 @@ else
 fi
 cd ../../..
 
-# 2. Start Manufacturer Portal
-echo -e "\n${BLUE}🏭 Starting Manufacturer Portal...${NC}"
-cd frontend/manufacturer-portal
-npm run dev -- --port 3010 &
-MANUFACTURER_PID=$!
-cd ../..
-
-# 3. Start Consumer Portal
-echo -e "\n${BLUE}👥 Starting Consumer Portal...${NC}"
-cd frontend/consumer-portal
-npm run dev -- --port 3012 &
-CONSUMER_PID=$!
-cd ../..
-
-# Wait for services to start
-sleep 3
-
-echo -e "\n${GREEN} System is running!${NC}"
-echo -e "   - Manufacturer Portal: ${BLUE}http://localhost:3010${NC}"
-echo -e "   - Consumer Portal:     ${BLUE}http://localhost:3012${NC}"
-echo -e "\nPress ${RED}Ctrl+C${NC} to stop all services."
-
-# Keep script running to maintain background processes
-wait
+# 2. Start Unified Portal (Replaces separated portals)
+echo -e "\n${BLUE}🌐 Starting Unified Portal (Manufacturer, Consumer, Regulator)...${NC}"
+./start-portal.sh

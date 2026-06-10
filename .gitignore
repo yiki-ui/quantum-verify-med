@@ -1,71 +1,62 @@
-# Dependencies
+# ─── Dependencies ─────────────────────────────────────────────────────────────
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
 
-# Environment variables  
+# ─── Environment Variables (NEVER commit these) ────────────────────────────────
 .env
 .env.local
 .env.*.local
+.env*
+# Keep only .env.example (safe template with no real keys)
+!.env.example
 
-# Logs and outputs
+# ─── Build Outputs ────────────────────────────────────────────────────────────
+dist/
+build/
+*.tsbuildinfo
+*.js.map
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
 logs/
 *.log
-*.tsbuildinfo
 
-# Database
+# ─── Database ─────────────────────────────────────────────────────────────────
 *.db
 *.sqlite
 
-# IDE
+# ─── IDE ──────────────────────────────────────────────────────────────────────
 .idea/
 .vscode/
 
-# Docker (no longer used)
-.dockerignore
-
-# Secrets
+# ─── Secrets ──────────────────────────────────────────────────────────────────
 *.pem
 *.keystore
 secrets/
+DEPLOYMENT.mod
 
-# Testing
+# ─── Large Binary / Media Files ───────────────────────────────────────────────
+*.mkv
+*.mp4
+*.mov
+*.avi
+"BeOrchid Top 30 Briefing (Final).pdf"
+
+# ─── Vercel ───────────────────────────────────────────────────────────────────
+.vercel
+
+# ─── Testing ──────────────────────────────────────────────────────────────────
 coverage/
 .nyc_output/
-.pytest_cache/
-.Python
 
-# Mobile (if removed)
-mobile/.expo/
-mobile/.expo-shared/
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
 
-# AI Models (if removed)
-ai-subsystem/models/*.pth
-ai-subsystem/models/*.h5
-
-# Misc
+# ─── Misc ─────────────────────────────────────────────────────────────────────
 .cache/
 temp/
 tmp/
 *~
-
-# Build outputs
-dist/
-build/
-*.js.map
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Removed directories (for reference)
-# backend/
-# infrastructure/
-# ai-subsystem/
-# admin-portal/
-# web-dashboard/
-# mobile/
-# pharma-verify/
-# hackathon-submissions/
-DEPLOYMENT.mod

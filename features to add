@@ -1,0 +1,51 @@
+What you already have that's rare 🔥
+
+Post-quantum cryptography (most devs don't even know what Dilithium is)
+Cardano blockchain with real NFT minting
+Dual portal architecture (manufacturer + consumer)
+No backend — pure decentralized
+Wallet-based auth (no passwords, no database to hack)
+
+
+AI features will try to be serveless and decentralized
+
+
+
+Features remaining to stand out 👇
+🔴 Critical (must have for demo)
+
+ Minting policy — prevent fake NFT minting
+ Consumer portal live on Vercel
+ AI risk analysis + chat (we just planned this)
+ End-to-end working demo on testnet
+
+🟡 High impact (judges will notice)
+
+ Regulator dashboard — a third portal for government bodies (NAFDAC, Rwanda FDA) to monitor all registered batches. This makes it enterprise ready
+ QR code generation — manufacturer registers batch → gets QR code to print on packaging → consumer scans with phone → goes straight to verification. This solves the "how does a normal person use this" problem
+ Batch expiry alerts — AI flags medicines close to or past expiry date automatically
+ Counterfeit incident reporting — consumer can flag a suspicious medicine, gets recorded on-chain
+
+🟢 Pitch boosters (even if not built)
+
+ USSD/WhatsApp concept — show a mockup of how rural consumers without smartphones could verify via *123# or WhatsApp. You don't need to build it, just show judges you thought about last-mile adoption
+ Real Africa numbers in your pitch — "In Rwanda alone, X% of medicines..." hits different when you're presenting to African judges
+ Supply chain visualization — show the journey of a medicine batch on a map (manufacturer → distributor → pharmacy → consumer)
+
+
+The one feature that could win it 🏆
+A Regulator Portal with an AI dashboard showing:
+
+Total batches registered nationally
+Counterfeit detection rate
+Suspicious batch heatmap by region
+One-click batch recall (burn the NFT)
+
+That moves this from "cool crypto project" to "national pharmaceutical infrastructure."
+
+Which of these do you want to start building? Given your timeline I'd prioritize in this order:
+
+Consumer portal live
+QR code generation
+AI analysis
+Regulator portal mockup

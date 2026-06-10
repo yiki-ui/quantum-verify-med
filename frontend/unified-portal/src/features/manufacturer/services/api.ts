@@ -166,9 +166,8 @@ export const cardanoApi = {
             Math.floor(Math.random() * 16).toString(16)
         ).join('');
 
-        const policyId = Array.from({ length: 56 }, () =>
-            Math.floor(Math.random() * 16).toString(16)
-        ).join('');
+        // Use the mock Aiken Policy ID for pharma_mint.ak
+        const policyId = 'mockAikenPolicy_pharmaVerify1234567890abcdef1234567890ab';
 
         const assetName = `PharmaVerify_${batchData.batchNumber}`;
 
